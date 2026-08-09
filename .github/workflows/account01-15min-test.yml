@@ -1,0 +1,165 @@
+name: CoinCoach Account01 — 15-minute live test
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type RUN_ACCOUNT01_TEST to publish one live post
+        required: true
+        type: string
+
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coincoach-account01-15min-test
+  cancel-in-progress: false
+
+jobs:
+  publish-account-01:
+    # Scheduled runs require the repository variable below to be "true".
+    # Manual runs require the explicit confirmation.
+    if: >-
+      ${{
+        (github.event_name == 'schedule' &&
+         vars.COINCOACH_ACCOUNT01_15MIN_TEST_ENABLED == 'true')
+        ||
+        (github.event_name == 'workflow_dispatch' &&
+         inputs.confirmation == 'RUN_ACCOUNT01_TEST')
+      }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+
+    env:
+      APP_ENV: github-actions-account01-15min-test
+
+      ACTIVE_ACCOUNT_ID: account_01
+
+      BINANCE_SQUARE_KEY_ACTIVE: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_01 }}
+
+      DATABASE_PATH: data/state/account_01/coincoach.db
+      PUBLISH_LEDGER_PATH: data/state/account_01/publish_ledger.json
+
+      ACCOUNT_ACTIVATION_MODE: key_present
+
+      PUBLISH_ENABLED: "true"
+      LIVE_PUBLISH_APPROVED: "true"
+
+      POSTS_PER_ACCOUNT_PER_RUN: "1"
+      LIVE_EXPECTED_POSTS_PER_HOUR: "4"
+      PER_ACCOUNT_DAILY_LIMIT: "96"
+
+      LIVE_RESERVE_CANDIDATES: "4"
+      LIVE_OUTER_CAPTURE_ATTEMPTS: "2"
+      LIVE_RETRY_DELAY_SECONDS: "2"
+      SYMBOL_COOLDOWN_HOURS: "1"
+
+      STATELESS_SLOT_ROTATION: "true"
+
+      WEB_CAPTURE_ENABLED: "true"
+      RENDERED_CHART_ENABLED: "false"
+      MOBILE_CAPTURE_ENABLED: "false"
+
+      # Keep this test Binance-only.
+      SOCIAL_SYNDICATION_ENABLED: "false"
+      SOCIAL_LIVE_APPROVED: "false"
+
+      DISCORD_PUBLISH_ENABLED: "false"
+      FACEBOOK_PUBLISH_ENABLED: "false"
+      INSTAGRAM_PUBLISH_ENABLED: "false"
+      THREADS_PUBLISH_ENABLED: "false"
+
+    steps:
+
+      - name: Validate manual trigger
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          if [ "${{ inputs.confirmation }}" != "RUN_ACCOUNT01_TEST" ]; then
+            echo "Manual confirmation must be RUN_ACCOUNT01_TEST"
+            exit 1
+          fi
+
+      - name: Detect Account01 API key
+        id: account-key
+        shell: bash
+        env:
+          ACCOUNT_KEY: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_01 }}
+        run: |
+          if [ -n "$ACCOUNT_KEY" ]; then
+            echo "active=true" >> "$GITHUB_OUTPUT"
+            echo "account_01 is active"
+          else
+            echo "active=false" >> "$GITHUB_OUTPUT"
+            echo "BINANCE_SQUARE_KEY_ACCOUNT_01 is missing"
+            exit 1
+          fi
+
+      - name: Check out project
+        if: steps.account-key.outputs.active == 'true'
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        if: steps.account-key.outputs.active == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Set up Node
+        if: steps.account-key.outputs.active == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Restore Account01 state
+        if: steps.account-key.outputs.active == 'true'
+        uses: actions/cache@v4
+        with:
+          path: data/state/account_01
+          key: coincoach-account01-15min-${{ github.run_id }}
+          restore-keys: |
+            coincoach-account01-15min-
+
+      - name: Install Python packages
+        if: steps.account-key.outputs.active == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Chromium for Playwright
+        if: steps.account-key.outputs.active == 'true'
+        run: |
+          python -m playwright install --with-deps chromium
+
+      - name: Install official Binance Square Post Skill
+        if: steps.account-key.outputs.active == 'true'
+        shell: bash
+        run: |
+          git clone --depth 1 \
+            https://github.com/binance/binance-skills-hub.git \
+            .binance-skills-hub
+
+          SKILL_DIR="$GITHUB_WORKSPACE/.binance-skills-hub/skills/binance/square-post"
+
+          test -f "$SKILL_DIR/scripts/post-image.mjs"
+
+          echo "BINANCE_SQUARE_SKILL_DIR=$SKILL_DIR" >> "$GITHUB_ENV"
+
+      - name: Generate and publish exactly one Account01 post
+        if: steps.account-key.outputs.active == 'true'
+        run: |
+          python -m scripts.run_square_slot
+
+      - name: Upload Account01 test artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coincoach-account01-15min-${{ github.run_number }}
+          path: output/
+          if-no-files-found: warn
+          retention-days: 2
