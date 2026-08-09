@@ -179,7 +179,9 @@ captions:
     - 47
     - 48
     - 49
-    - 50    - 50capture:
+    - 50
+
+capture:
   enabled: false
   web_enabled: true
   rendered_enabled: false
@@ -233,6 +235,7 @@ captions:
     maximum_price_deviation_percent: 0.8
     freshness_grace_seconds: 300
     timeframe_activation_mode: exact_mobile_row_click_only
+
 publishing:
   enabled: false
   official_skill_dir_env: BINANCE_SQUARE_SKILL_DIR
