@@ -145,20 +145,39 @@ captions:
     prefer_perpetual_on_selected_slots: true
     slots_per_day: 96
     daily_post_options:
-    - 30
+    - 67
     values:
-    - 15
-    - 16
-    - 17
-    - 18
-    - 19
     - 20
     - 21
     - 22
     - 23
     - 24
     - 25
-capture:
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+    - 36
+    - 37
+    - 38
+    - 39
+    - 40
+    - 41
+    - 42
+    - 43
+    - 44
+    - 45
+    - 46
+    - 47
+    - 48
+    - 49
+    - 50capture:
   enabled: false
   web_enabled: true
   rendered_enabled: false
