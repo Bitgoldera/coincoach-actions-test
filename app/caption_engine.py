@@ -242,7 +242,7 @@ def _leverage_value(signal: Signal, seed: bytes, leverage_cfg: dict) -> int:
     if "tradfi" in market_tags or "bstock" in market_tags:
         return 5
     by_timeframe = leverage_cfg.get("values_by_timeframe", {})
-    values = by_timeframe.get(signal.timeframe, leverage_cfg.get("values", [20, 30, 40, 50, 70, 100]))
+    values = by_timeframe.get(signal.timeframe, leverage_cfg.get("values", list(range(20, 51))))
     normalized = [int(value) for value in values if int(value) > 0]
     if not normalized:
         normalized = [10]

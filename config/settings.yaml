@@ -25,7 +25,9 @@ market:
   candles_per_timeframe: 220
   request_concurrency: 8
   exclude_tokenized_securities: true
-  include_tradfi_tokenized_securities: true
+  include_tradfi_tokenized_securities: false
+  include_bstock_spot: true
+  include_tradfi_futures: true
   # Spot remains the baseline. Futures is an additional independent universe.
   include_futures_universe: true
   futures_quote_assets:
@@ -177,7 +179,7 @@ captions:
     - 47
     - 48
     - 49
-    - 50capture:
+    - 50    - 50capture:
   enabled: false
   web_enabled: true
   rendered_enabled: false

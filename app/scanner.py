@@ -37,9 +37,19 @@ class UniverseScanner:
         if cfg.get("exclude_tokenized_securities", False):
             suffix = str(cfg.get("tokenized_security_suffix", "B")).upper()
             allowed = {str(value).upper() for value in cfg.get("crypto_assets_with_security_suffix_allowlist", [])}
-            include_tradfi = bool(cfg.get("include_tradfi_tokenized_securities", False))
-            if suffix and base_asset.endswith(suffix) and base_asset not in allowed and not include_tradfi:
-                return "tokenized_security_or_unclassified_suffix"
+            is_tokenized = bool(suffix and base_asset.endswith(suffix) and base_asset not in allowed)
+            if is_tokenized:
+                if symbol.market_type == "futures":
+                    # TradFi Futures are an independent USDⓈ-M universe.
+                    if not bool(cfg.get("include_tradfi_futures", True)):
+                        return "tokenized_futures_disabled"
+                else:
+                    # bStock Spot remains controlled by the existing
+                    # tokenized-security switch and explicit bStock switch.
+                    if not bool(cfg.get("include_tradfi_tokenized_securities", False)):
+                        return "tokenized_security_or_unclassified_suffix"
+                    if not bool(cfg.get("include_bstock_spot", True)):
+                        return "bstock_spot_disabled"
 
         if any(pattern.fullmatch(symbol.symbol) for pattern in patterns):
             return "excluded_symbol_pattern"
@@ -123,10 +133,15 @@ class UniverseScanner:
 
         if bool(cfg.get("include_futures_universe", False)):
             try:
+                futures_quote_assets = [
+                    str(value).upper().strip()
+                    for value in cfg.get("futures_quote_assets", ["USDT"])
+                    if str(value).strip()
+                ] or ["USDT"]
                 futures_results = await asyncio.gather(
-                    *(self.client.futures_universe(quote_asset) for quote_asset in quote_assets)
+                    *(self.client.futures_universe(quote_asset) for quote_asset in futures_quote_assets)
                 )
-                for quote_asset, quote_universe in zip(quote_assets, futures_results):
+                for quote_asset, quote_universe in zip(futures_quote_assets, futures_results):
                     for symbol, item in quote_universe.items():
                         universe[f"futures:{symbol}"] = item
                     stats[f"raw_futures_{quote_asset.lower()}"] = len(quote_universe)
@@ -186,7 +201,10 @@ class UniverseScanner:
         async def fetch(symbol: MarketSymbol, timeframe: str) -> DeepScanItem | None:
             async with semaphore:
                 try:
-                    candles = await self.client.klines(symbol.symbol, timeframe, limit)
+                    if symbol.market_type == "futures":
+                        candles = await self.client.futures_klines(symbol.symbol, timeframe, limit)
+                    else:
+                        candles = await self.client.klines(symbol.symbol, timeframe, limit)
                     if len(candles) < 80:
                         return None
                     return DeepScanItem(symbol=symbol, timeframe=timeframe, candles=candles)
