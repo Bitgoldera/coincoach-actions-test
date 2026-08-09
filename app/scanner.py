@@ -110,15 +110,29 @@ class UniverseScanner:
         if not quote_assets:
             quote_assets = [str(cfg.get("quote_asset", "USDT")).upper()]
 
-        universe_results = await asyncio.gather(
+        spot_results = await asyncio.gather(
             *(self.client.universe(quote_asset) for quote_asset in quote_assets)
         )
         universe: dict[str, MarketSymbol] = {}
-        stats: dict[str, int] = {"raw_spot_total": 0, "eligible": 0}
-        for quote_asset, quote_universe in zip(quote_assets, universe_results):
-            universe.update(quote_universe)
+        stats: dict[str, int] = {"raw_spot_total": 0, "raw_futures_total": 0, "eligible": 0}
+        for quote_asset, quote_universe in zip(quote_assets, spot_results):
+            for symbol, item in quote_universe.items():
+                universe[f"spot:{symbol}"] = item
             stats[f"raw_spot_{quote_asset.lower()}"] = len(quote_universe)
             stats["raw_spot_total"] += len(quote_universe)
+
+        if bool(cfg.get("include_futures_universe", False)):
+            try:
+                futures_results = await asyncio.gather(
+                    *(self.client.futures_universe(quote_asset) for quote_asset in quote_assets)
+                )
+                for quote_asset, quote_universe in zip(quote_assets, futures_results):
+                    for symbol, item in quote_universe.items():
+                        universe[f"futures:{symbol}"] = item
+                    stats[f"raw_futures_{quote_asset.lower()}"] = len(quote_universe)
+                    stats["raw_futures_total"] += len(quote_universe)
+            except Exception:
+                stats["futures_universe_unavailable"] = 1
 
         discovery = cfg.get("discovery", {})
         perpetual_metadata: dict[str, dict] = {}

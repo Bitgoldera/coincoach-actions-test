@@ -38,6 +38,7 @@ class MarketSymbol:
     market_tags: tuple[str, ...] = ()
     perpetual_eligible: bool = False
     onboard_date_ms: int | None = None
+    market_type: str = "spot"
 
     @property
     def spread_percent(self) -> float:

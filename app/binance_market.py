@@ -73,6 +73,51 @@ class BinanceMarketClient:
             )
         return universe
 
+    async def futures_universe(self, quote_asset: str = "USDT") -> dict[str, MarketSymbol]:
+        """Return the active USDⓈ-M perpetual futures universe.
+
+        Futures are scanned independently from Spot; the same base asset may
+        legitimately appear in both universes.
+        """
+        base_url = "https://fapi.binance.com"
+        async with httpx.AsyncClient(base_url=base_url, timeout=self.client.timeout) as client:
+            exchange_info, tickers, books = await asyncio.gather(
+                client.get("/fapi/v1/exchangeInfo"),
+                client.get("/fapi/v1/ticker/24hr"),
+                client.get("/fapi/v1/ticker/bookTicker"),
+            )
+            exchange_info.raise_for_status(); tickers.raise_for_status(); books.raise_for_status()
+            exchange_payload = exchange_info.json()
+            ticker_by_symbol = {row["symbol"]: row for row in tickers.json()}
+            book_by_symbol = {row["symbol"]: row for row in books.json()}
+            universe: dict[str, MarketSymbol] = {}
+            normalized_quote = str(quote_asset).upper().strip()
+            for row in exchange_payload.get("symbols", []):
+                if row.get("quoteAsset") != normalized_quote or row.get("status") != "TRADING":
+                    continue
+                if row.get("contractType") != "PERPETUAL":
+                    continue
+                tick_size = step_size = 0.0
+                for item in row.get("filters", []):
+                    if item.get("filterType") in {"PRICE_FILTER", "PRICE_FILTER"}:
+                        tick_size = float(item.get("tickSize", 0))
+                    elif item.get("filterType") in {"LOT_SIZE", "MARKET_LOT_SIZE"} and step_size <= 0:
+                        step_size = float(item.get("stepSize", 0))
+                ticker = ticker_by_symbol.get(row["symbol"], {})
+                book = book_by_symbol.get(row["symbol"], {})
+                universe[row["symbol"]] = MarketSymbol(
+                    symbol=row["symbol"], base_asset=row["baseAsset"], quote_asset=row["quoteAsset"],
+                    status=row["status"], tick_size=tick_size, step_size=step_size,
+                    quote_precision=int(row.get("quotePrecision", 8)),
+                    price=float(ticker.get("lastPrice", 0)),
+                    change_percent_24h=float(ticker.get("priceChangePercent", 0)),
+                    high_24h=float(ticker.get("highPrice", 0)), low_24h=float(ticker.get("lowPrice", 0)),
+                    quote_volume_24h=float(ticker.get("quoteVolume", 0)),
+                    bid=float(book.get("bidPrice", 0)), ask=float(book.get("askPrice", 0)),
+                    perpetual_eligible=True, market_type="futures",
+                )
+            return universe
+
     async def perpetual_metadata(self) -> dict[str, dict[str, Any]]:
         """Return best-effort USDⓈ-M perpetual metadata keyed by base asset.
 
@@ -128,6 +173,22 @@ class BinanceMarketClient:
                 if onboard_date_ms is not None and (previous is None or onboard_date_ms > previous):
                     current["onboard_date_ms"] = onboard_date_ms
         return metadata
+
+    async def futures_klines(self, symbol: str, interval: str, limit: int = 220) -> list[Candle]:
+        payload = await self._get_futures(
+            "/fapi/v1/klines", params={"symbol": symbol, "interval": interval, "limit": limit}
+        )
+        return [
+            Candle(open_time=int(row[0]), open=float(row[1]), high=float(row[2]), low=float(row[3]),
+                   close=float(row[4]), volume=float(row[5]), close_time=int(row[6]), quote_volume=float(row[7]))
+            for row in payload
+        ]
+
+    async def _get_futures(self, path: str, params: dict[str, Any] | None = None) -> Any:
+        async with httpx.AsyncClient(base_url="https://fapi.binance.com", timeout=self.client.timeout) as client:
+            response = await client.get(path, params=params)
+            response.raise_for_status()
+            return response.json()
 
     async def klines(self, symbol: str, interval: str, limit: int = 220) -> list[Candle]:
         payload = await self._get(

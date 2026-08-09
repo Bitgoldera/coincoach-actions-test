@@ -117,7 +117,8 @@ class CaptionStructureTest(unittest.TestCase):
             self.assertIn("TP2:", caption)
             self.assertIn("TP3:", caption)
             self.assertIn("Stop Loss:", caption)
-            self.assertTrue(caption.endswith("Stop Loss: 65000.00"))
+            self.assertIn("Stop Loss: 65000.00", caption)
+            self.assertRegex(caption.splitlines()[-1], r"^#BTC #(?:Binance|binance) #(?:Write2Earn|Write2Earn!) #(?:crypto|Crypto)$")
             storage.close()
 
     def test_signal_details_support_multiple_human_readable_layouts(self):
@@ -161,7 +162,8 @@ class CaptionStructureTest(unittest.TestCase):
                 self._signal("LONG", "15m"), "account_01", "punchy"
             )
             self.assertIn("Long | Futures | 15M", caption)
-            self.assertTrue(caption.endswith("NFA. DYOR."))
+            self.assertIn("NFA. DYOR.", caption)
+            self.assertRegex(caption.splitlines()[-1], r"^#BTC #(?:Binance|binance) #(?:Write2Earn|Write2Earn!) #(?:crypto|Crypto)$")
             storage.close()
 
 
@@ -269,3 +271,39 @@ class CaptionLeverageTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CaptionHashtagAndBStockTest(unittest.TestCase):
+    def _signal(self, base="BTC", tags=()):
+        return Signal(
+            signal_id=f"tags-{base}", symbol=f"{base}USDT", base_asset=base, timeframe="1h",
+            side="LONG", setup="trend_pullback", score=80, current_price=100.0,
+            entry_low=99.0, entry_high=101.0, entry_mid=100.0, stop_loss=96.0,
+            tp1=103.0, tp2=106.0, tp3=109.0, stop_percent=4.0, tp1_percent=3.0,
+            tp2_percent=6.0, tp3_percent=9.0, facts={"perpetual_eligible": True, "market_tags": list(tags)},
+        )
+
+    def test_caption_has_exact_dynamic_four_tag_structure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            storage = Storage(Path(directory) / "test.db")
+            settings = {"captions": {"maximum_recent_phrases": 250, "guys_probability": 0.0}}
+            caption = CaptionEngine(storage, settings).generate(self._signal("BTC"), "account_01", "punchy")
+            tags = caption.splitlines()[-1].split()
+            self.assertEqual(4, len(tags))
+            self.assertEqual("#BTC", tags[0])
+            self.assertIn(tags[1], {"#Binance", "#binance"})
+            self.assertIn(tags[2], {"#Write2Earn", "#Write2Earn!"})
+            self.assertIn(tags[3], {"#crypto", "#Crypto"})
+            storage.close()
+
+    def test_bstock_uses_five_x_override(self):
+        from app.caption_engine import _leverage_value
+        signal = self._signal("AAPL", ("tradfi",))
+        self.assertEqual(5, _leverage_value(signal, bytes(range(32)), {"values": list(range(20, 51)) + [70, 100]}))
+
+    def test_crypto_keeps_configured_high_leverage_values(self):
+        from app.caption_engine import _leverage_value
+        signal = self._signal("BTC", ("perpetual",))
+        values = list(range(20, 51)) + [70, 100]
+        value = _leverage_value(signal, bytes(range(32)), {"values": values})
+        self.assertIn(value, values)

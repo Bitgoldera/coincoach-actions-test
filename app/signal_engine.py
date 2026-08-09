@@ -96,6 +96,7 @@ class SignalEngine:
                 "perpetual_eligible": bool(item.symbol.perpetual_eligible),
                 "quote_asset": item.symbol.quote_asset,
                 "onboard_date_ms": item.symbol.onboard_date_ms,
+                "market_type": item.symbol.market_type,
             })
             candidates.append(Candidate(
                 symbol=item.symbol,

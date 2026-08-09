@@ -236,8 +236,13 @@ def _daily_leverage_slots(
 
 
 def _leverage_value(signal: Signal, seed: bytes, leverage_cfg: dict) -> int:
+    # bStock / tokenized TradFi gets a hard 5x override. Normal crypto keeps
+    # the configured leverage ladder (including the existing high-leverage values).
+    market_tags = {str(tag).lower() for tag in signal.facts.get("market_tags", [])}
+    if "tradfi" in market_tags or "bstock" in market_tags:
+        return 5
     by_timeframe = leverage_cfg.get("values_by_timeframe", {})
-    values = by_timeframe.get(signal.timeframe, leverage_cfg.get("values", [5, 10, 15, 20]))
+    values = by_timeframe.get(signal.timeframe, leverage_cfg.get("values", [20, 30, 40, 50, 70, 100]))
     normalized = [int(value) for value in values if int(value) > 0]
     if not normalized:
         normalized = [10]
@@ -321,6 +326,19 @@ def _maybe_add_leverage(
 
     leverage = _leverage_value(signal, seed, leverage_cfg)
     return _inject_leverage_phrase(opening, signal, leverage, seed)
+
+
+def _hashtag_line(signal: Signal, seed: bytes, hashtag_cfg: dict) -> str:
+    """Build exactly four hashtags: asset + one variant from each configured group."""
+    groups = hashtag_cfg or {}
+    binance = list(groups.get("binance", ["#Binance", "#binance"]))
+    write2earn = list(groups.get("write2earn", ["#Write2Earn", "#Write2Earn!"]))
+    crypto = list(groups.get("crypto", ["#crypto", "#Crypto"]))
+    asset = str(signal.base_asset).strip().upper().replace(" ", "")
+    def choose(options: list[str], offset: int) -> str:
+        valid = [str(value).strip() for value in options if str(value).strip()]
+        return valid[seed[offset % len(seed)] % len(valid)] if valid else ""
+    return " ".join(part for part in (f"#{asset}", choose(binance, 7), choose(write2earn, 13), choose(crypto, 29)) if part)
 
 
 class CaptionEngine:
@@ -419,4 +437,5 @@ class CaptionEngine:
         if bool(caption_cfg.get("include_risk_note", False)) and risk_note:
             parts.extend(["", risk_note])
 
+        parts.extend(["", _hashtag_line(signal, seed, caption_cfg.get("hashtags", {}))])
         return "\n".join(parts)

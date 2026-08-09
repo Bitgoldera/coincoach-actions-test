@@ -26,6 +26,10 @@ market:
   request_concurrency: 8
   exclude_tokenized_securities: true
   include_tradfi_tokenized_securities: true
+  # Spot remains the baseline. Futures is an additional independent universe.
+  include_futures_universe: true
+  futures_quote_assets:
+  - USDT
   tokenized_security_suffix: B
   crypto_assets_with_security_suffix_allowlist:
   - BNB
