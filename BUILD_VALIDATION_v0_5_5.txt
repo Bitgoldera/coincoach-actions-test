@@ -1,0 +1,25 @@
+CoinCoachSignalCloud v0.5.5 build validation
+
+RESULT: PASS (offline/code validation)
+
+Validated:
+- Python compileall: passed
+- Unit test suite: 81 tests passed
+- Render safety-disabled entrypoint: passed; exited without scanning or publishing
+- render.yaml, config/settings.yaml and config/accounts.yaml YAML parsing: passed
+- Four-slot cron cadence: 6,21,36,51 with 15-minute spacing
+- Blueprint live defaults: both Render safety switches false
+- Round-robin account selection: passed
+- Explicit parallel account mode: passed
+- Stateless candidate rotation: passed
+- 1080x1080 official Binance chart tests: passed
+- GitHub PAT-like secret scan: no token-like strings found
+- Obsolete Cloudflare scheduler and external-dispatch workflow: removed
+
+Not validated in this environment:
+- Docker image build (Docker engine unavailable)
+- Render Blueprint deployment
+- Live Chromium access to Binance
+- Live Binance Square API publishing
+
+Live operation must remain disabled until the Render safety-disabled Trigger Run completes successfully.

@@ -1,0 +1,17 @@
+CoinCoachSignalCloud v0.5.4 build validation
+
+Validation completed in the build container.
+
+Checks:
+- Cloudflare Worker JavaScript syntax: passed (`node --check`)
+- Python unit test discovery: passed
+- Tests run: 77
+- Failures: 0
+- Errors: 0
+
+Not performed in the container:
+- Live Cloudflare deployment
+- Live GitHub workflow dispatch
+- Live Binance Square publishing
+
+Those require the user's Cloudflare account, GitHub token, repository variables and Binance Square API secrets.

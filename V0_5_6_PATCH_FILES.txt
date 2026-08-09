@@ -1,0 +1,18 @@
+v0.5.6 patch files
+
+COPY / RESTORE:
+.github/workflows/live-square-96-per-day.yml
+cloudflare_scheduler/wrangler.toml
+cloudflare_scheduler/src/index.js
+cloudflare_scheduler/README.md
+cloudflare_scheduler/install_gh_oauth_secret.ps1
+docs/CHANGELOG_v0_5_6.md
+V0_5_6_PATCH_FILES.txt
+BUILD_VALIDATION_v0_5_6.txt
+
+REMOVE:
+render.yaml
+Dockerfile.render
+scripts/run_render_slot.py
+docs/RENDER_CRON_SETUP.md
+.github/workflows/schedule-heartbeat.yml

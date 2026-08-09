@@ -1,0 +1,8 @@
+app/caption_engine.py
+config/settings.yaml
+scripts/run_free_cloud.py
+tests/test_caption_variation.py
+tests/test_free_cloud_preview_config.py
+docs/CHANGELOG_v0_4_9.md
+BUILD_VALIDATION_v0_4_9.txt
+V0_4_9_PATCH_FILES.txt

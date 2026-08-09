@@ -1,0 +1,7 @@
+app/storage.py
+tests/test_caption_variation.py
+tests/test_live_96_schedule.py
+docs/CHANGELOG_v0_5_8_1.md
+BUILD_VALIDATION_v0_5_8_1.txt
+V0_5_8_1_PATCH_FILES.txt
+install_v0_5_8_1_patch.ps1

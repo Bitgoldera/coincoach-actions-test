@@ -1,0 +1,9 @@
+CoinCoachSignalCloud v0.4.5 validation
+
+- Python compilation: passed
+- YAML settings parse: passed
+- Full unittest suite: 57 tests passed
+- Router diversity tests: passed
+- Caption structure tests: passed
+- Preview image publishing: remains disabled
+- Live Binance multi-image run: must be confirmed by a fresh GitHub Actions preview run

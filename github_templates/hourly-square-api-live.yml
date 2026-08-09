@@ -1,0 +1,9 @@
+# REFERENCE TEMPLATE — active workflow is .github/workflows/live-square-96-per-day.yml
+name: CoinCoach Square live — 96 posts per day
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+
+# Four runs/hour × 24 hours = 96 scheduled live slots per day.
+# Each run publishes at most one post per keyed account.

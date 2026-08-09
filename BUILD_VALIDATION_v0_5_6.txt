@@ -1,0 +1,9 @@
+CoinCoachSignalCloud v0.5.6 validation
+
+- JavaScript syntax: passed
+- GitHub workflow YAML parse: passed
+- Configuration YAML parse: passed
+- Python tests: 77 passed, 12 subtests passed in 12.88s
+- Render deployment files removed from active build
+- Cloudflare/GitHub free scheduler restored
+- OAuth token helper stores no token in repository files

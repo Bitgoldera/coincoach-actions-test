@@ -1,0 +1,6 @@
+config/settings.yaml
+tests/test_official_web_chart.py
+docs/CHANGELOG_v0_5_2.md
+BUILD_VALIDATION_v0_5_2.txt
+V0_5_2_PATCH_FILES.txt
+install_v0_5_2_patch.ps1

@@ -1,0 +1,227 @@
+mode: dry_run
+schedule:
+  signals_per_account_per_hour: 4
+  strict_hourly_quota: true
+  global_unique_symbol_per_hour: true
+  max_signals_per_timeframe_per_account: 2
+  strict_timeframe_diversity: true
+  cycle_minute: 0
+  slot_spacing_minutes: 15
+market:
+  quote_asset: USDT
+  quote_assets:
+  - USDT
+  - USDC
+  market_type: spot
+  minimum_quote_volume_usdt: 10000000
+  minimum_price: 1.0e-08
+  maximum_spread_percent: 0.4
+  shortlist_size: 220
+  deep_scan_limit: 140
+  timeframes:
+  - 15m
+  - 1h
+  - 4h
+  candles_per_timeframe: 220
+  request_concurrency: 8
+  exclude_tokenized_securities: true
+  include_tradfi_tokenized_securities: true
+  tokenized_security_suffix: B
+  crypto_assets_with_security_suffix_allowlist:
+  - BNB
+  - ARB
+  - CKB
+  - DGB
+  - TRB
+  - VIB
+  - BB
+  excluded_base_assets:
+  - USDC
+  - FDUSD
+  - TUSD
+  - USDP
+  - DAI
+  - EUR
+  - AEUR
+  - TRY
+  - BRL
+  - GBP
+  - AUD
+  - UAH
+  - PLN
+  - RON
+  - ZAR
+  - PAXG
+  - XAUT
+  excluded_symbol_patterns:
+  - .*(UP|DOWN|BULL|BEAR)(USDT|USDC)$
+  discovery:
+    fetch_perpetual_metadata: true
+    new_listing_max_age_days: 45
+    # Alpha is handled by a transparent watchlist instead of an undocumented endpoint.
+    # Add or remove symbols here as the official Alpha universe changes.
+    alpha_assets:
+    - AIXBT
+    - COOKIE
+    - CGPT
+    - KAITO
+    - PARTI
+    - BIO
+    ai_assets:
+    - FET
+    - TAO
+    - RENDER
+    - WLD
+    - ARKM
+    - AIXBT
+    - CGPT
+    - KAITO
+    web3_assets:
+    - LINK
+    - GRT
+    - FIL
+    - AR
+    - ICP
+    - ENS
+    - LPT
+    - OP
+    - ARB
+    category_score_boosts:
+      perpetual: 9.0
+      new_listing: 8.0
+      alpha: 7.0
+      ai: 5.0
+      web3: 4.0
+      usdc: 3.0
+      tradfi: 2.0
+signals:
+  minimum_score: 48
+  tier_b_minimum_score: 40
+  tier_c_minimum_score: 32
+  maximum_stop_percent: 7.0
+  maximum_stop_percent_by_timeframe:
+    15m: 4.75
+    1h: 6.0
+    4h: 7.5
+  # Balanced target caps: closer than the old swing-style distances, but still
+  # wide enough for normal crypto volatility. Risk-derived targets are retained
+  # whenever they are already below these timeframe-specific limits.
+  maximum_tp_percent_by_timeframe:
+    15m:
+    - 3.0
+    - 5.5
+    - 8.0
+    1h:
+    - 3.5
+    - 6.5
+    - 10.0
+    4h:
+    - 5.0
+    - 9.5
+    - 14.0
+  minimum_stop_percent: 1.6
+  entry_zone_atr_fraction: 0.15
+  stop_buffer_atr_fraction: 0.22
+  symbol_cooldown_hours: 6
+  allow_short_signals: true
+captions:
+  guys_probability: 0.05
+  maximum_recent_phrases: 250
+  maximum_length: 320
+  include_signal_line: true
+  include_context_line: false
+  spot_context_label: Spot chart
+  futures_context_label: Futures
+  include_risk_note: false
+  risk_note: ''
+  vary_signal_detail_layout: true
+  leverage:
+    enabled: true
+    require_perpetual_eligible: true
+    prefer_perpetual_on_selected_slots: true
+    slots_per_day: 96
+    daily_post_options:
+    - 30
+    values:
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+capture:
+  enabled: false
+  web_enabled: true
+  rendered_enabled: false
+  provider: official_binance_mobile_web_live_verified
+  output_width: 1080
+  output_height: 1080
+  screenshot_timeout_seconds: 35
+  crop_box:
+  - 0
+  - 410
+  - 1080
+  - 1490
+  web:
+    url_template: https://www.binance.com/en/trade/{base}_{quote}?type=spot
+    market_data_base_url: https://data-api.binance.vision
+    market_data_timeout_seconds: 20
+    viewport_width: 430
+    viewport_height: 932
+    maximum_mobile_viewport_width: 540
+    device_scale_factor: 2
+    is_mobile: true
+    has_touch: true
+    user_agent: Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML,
+      like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36
+    navigation_timeout_seconds: 75
+    settle_seconds: 9
+    capture_mode: official_mobile_chart_square
+    output_size_pixels: 1080
+    output_width_pixels: 1080
+    output_height_pixels: 1080
+    crop_aspect_ratio: 1.0
+    crop_pair_gap_pixels: 4
+    crop_base_down_shift_pixels: 8
+    crop_vertical_jitter_min_pixels: -6
+    crop_vertical_jitter_max_pixels: 10
+    crop_timeframe_safe_margin_pixels: 85
+    crop_price_safe_padding_pixels: 10
+    minimum_image_bytes: 50000
+    timezone: Asia/Kolkata
+    locale: en-US
+    max_attempts: 2
+    chart_activity_checks: 8
+    chart_activity_check_seconds: 1.2
+    header_above_timeframe_pixels: 255
+    minimum_visible_chart_pixels: 250
+    require_ma_overlay_removed: true
+    allow_ma_overlay_for_capture_proof: false
+    require_timeframe_confirmation: true
+    require_network_timeframe_confirmation: true
+    network_timeframe_confirmation_seconds: 7
+    maximum_price_deviation_percent: 0.8
+    freshness_grace_seconds: 300
+    timeframe_activation_mode: exact_mobile_row_click_only
+publishing:
+  enabled: false
+  official_skill_dir_env: BINANCE_SQUARE_SKILL_DIR
+  per_account_daily_limit: 96
+  media_upload_limit: 400
+  request_timeout_seconds: 180
+
+# v0.6.0 defaults are descriptive only; GitHub Variables and Secrets control live use.
+social:
+  source_account_id: account_02
+  syndication_enabled: false
+  live_approved: false
+  discord_enabled: false
+  facebook_enabled: false
+  instagram_enabled: false
+  threads_enabled: false
+  pending_retry_limit: 1

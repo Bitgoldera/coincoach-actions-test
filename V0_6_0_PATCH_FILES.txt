@@ -1,0 +1,14 @@
+.github/workflows/live-square-96-per-day.yml
+.github/workflows/manual-account-02-social-pilot.yml
+.env.example
+app/social_publishers.py
+config/settings.yaml
+scripts/run_square_slot.py
+scripts/validate_social_pilot.py
+tests/test_live_96_schedule.py
+tests/test_social_pilot_workflow.py
+tests/test_social_syndication.py
+docs/CHANGELOG_v0_6_0.md
+docs/SOCIAL_MEDIA_SETUP_v0_6_0.md
+V0_6_0_PATCH_FILES.txt
+BUILD_VALIDATION_v0_6_0.txt

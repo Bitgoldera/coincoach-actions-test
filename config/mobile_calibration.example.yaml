@@ -1,0 +1,20 @@
+# Calibrate once against a fixed cloud Android resolution.
+# Coordinates are placeholders and must be replaced after the proof-of-concept.
+resolution: [1080, 2400]
+launch_wait_seconds: 5
+coordinates:
+  markets_tab: [540, 2250]
+  search_button: [980, 155]
+  search_input: [420, 155]
+  first_search_result: [420, 390]
+  chart_tab: [420, 830]
+  timeframe_button: [220, 975]
+  timeframe_menu:
+    15m: [170, 1080]
+    1h: [330, 1080]
+    4h: [490, 1080]
+    1D: [650, 1080]
+  dismiss_popup: [1010, 225]
+validation:
+  expected_dark_pixel: [40, 40, 45]
+  minimum_image_bytes: 90000

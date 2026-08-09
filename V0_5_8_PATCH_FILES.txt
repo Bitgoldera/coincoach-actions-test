@@ -1,0 +1,16 @@
+app/binance_market.py
+app/caption_engine.py
+app/models.py
+app/official_web_chart.py
+app/router.py
+app/scanner.py
+app/signal_engine.py
+app/web_capture.py
+config/settings.yaml
+tests/test_caption_variation.py
+tests/test_discovery_scanner.py
+tests/test_router.py
+tests/test_web_capture.py
+docs/CHANGELOG_v0_5_8.md
+V0_5_8_PATCH_FILES.txt
+BUILD_VALIDATION_v0_5_8.txt

@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+data/*.db
+output/charts/*.png
+output/previews/*.json
+output/previews/*.txt
+output/previews/*.md
+playwright-report/
+test-results/
+output/android/*
+!output/android/.gitkeep
+tmp/
+
+cloudflare_scheduler/

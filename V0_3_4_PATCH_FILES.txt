@@ -1,0 +1,8 @@
+app/official_web_chart.py
+config/settings.yaml
+tests/test_official_web_chart.py
+README.md
+docs/CHANGELOG_v0_3_4.md
+V0_3_4_PATCH_FILES.txt
+install_v0_3_4_patch.ps1
+BUILD_VALIDATION_v0_3_4.txt

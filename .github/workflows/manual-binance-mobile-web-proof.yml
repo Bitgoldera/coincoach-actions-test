@@ -1,0 +1,92 @@
+name: Manual official Binance mobile-web live chart proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbol:
+        description: Current USDT symbol to capture, for example BTCUSDT
+        required: true
+        default: BTCUSDT
+        type: string
+      timeframe:
+        description: Exact signal timeframe to select and verify
+        required: true
+        default: 15m
+        type: choice
+        options:
+          - 15m
+          - 1h
+          - 4h
+      confirmation:
+        description: Type CAPTURE_ONE to run one capture-only proof
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coincoach-official-mobile-web-proof
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      APP_ENV: github-actions-official-mobile-web-proof
+      DATABASE_PATH: data/coincoach.db
+      ACCOUNT_ACTIVATION_MODE: enabled_only
+      PUBLISH_ENABLED: "false"
+      LIVE_PUBLISH_APPROVED: "false"
+      WEB_CAPTURE_ENABLED: "true"
+      RENDERED_CHART_ENABLED: "false"
+      MOBILE_CAPTURE_ENABLED: "false"
+      PROOF_SYMBOL: ${{ inputs.symbol }}
+      PROOF_TIMEFRAME: ${{ inputs.timeframe }}
+      CAPTURE_APPROVAL: ${{ inputs.confirmation }}
+      PROOF_ALLOW_MA_OVERLAY: "true"
+
+    steps:
+      - name: Validate approval
+        shell: bash
+        run: |
+          if [ "${{ inputs.confirmation }}" != "CAPTURE_ONE" ]; then
+            echo "Confirmation must be CAPTURE_ONE"
+            exit 1
+          fi
+
+      - name: Check out project
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install Python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run mobile live-capture tests
+        run: |
+          python -m unittest -v \
+            tests/test_official_web_chart.py \
+            tests/test_web_capture.py
+
+      - name: Capture one live official Binance mobile chart
+        run: python -m scripts.run_official_web_proof
+
+      - name: Upload official mobile-web proof artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: official-binance-mobile-web-proof-${{ github.run_number }}
+          path: output/mobile_web_proof/
+          if-no-files-found: warn
+          retention-days: 2

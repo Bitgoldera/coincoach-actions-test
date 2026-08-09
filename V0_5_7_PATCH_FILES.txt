@@ -1,0 +1,5 @@
+config/settings.yaml
+tests/test_signal_risk_controls.py
+docs/CHANGELOG_v0_5_7.md
+V0_5_7_PATCH_FILES.txt
+BUILD_VALIDATION_v0_5_7.txt

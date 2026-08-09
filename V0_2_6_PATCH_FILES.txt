@@ -1,0 +1,5 @@
+app/official_web_chart.py
+config/settings.yaml
+.github/workflows/manual-binance-web-proof.yml
+tests/test_official_web_chart.py
+docs/CHANGELOG_v0_2_6.md

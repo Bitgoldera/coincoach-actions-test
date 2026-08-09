@@ -1,0 +1,14 @@
+CoinCoachSignalCloud v0.5.1 build validation
+
+- Python compile: passed
+- Full unittest discovery: 68 tests passed
+- Covered timeframe-control browser test: passed
+- Exact DOM control fallback: passed
+- Live reserve candidate plan: passed
+- Live non-destructive capture policy: passed
+- Manual Square pilot target: one post per keyed account
+- Reserve candidates per account: 4
+- Outer capture attempts per candidate: 2
+- Blind coordinate clicks: none added
+
+Live Binance Square publication still depends on the next GitHub Actions one-post run.

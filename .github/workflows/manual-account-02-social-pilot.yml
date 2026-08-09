@@ -1,0 +1,161 @@
+name: Manual account_02 Square + social pilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type POST_ACCOUNT_02_SOCIAL_PILOT
+        required: true
+        type: string
+      discord:
+        description: Publish to Discord
+        required: true
+        default: true
+        type: boolean
+      facebook:
+        description: Publish to Facebook Page
+        required: true
+        default: false
+        type: boolean
+      instagram:
+        description: Publish to Instagram
+        required: true
+        default: false
+        type: boolean
+      threads:
+        description: Publish to Threads
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coincoach-account-02-social-pilot
+  cancel-in-progress: false
+
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      APP_ENV: github-actions-account-02-social-pilot
+      ACTIVE_ACCOUNT_ID: account_02
+      BINANCE_SQUARE_KEY_ACTIVE: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_02 }}
+      DATABASE_PATH: data/state/account_02/coincoach.db
+      PUBLISH_LEDGER_PATH: data/state/account_02/publish_ledger.json
+      ACCOUNT_ACTIVATION_MODE: key_present
+      PUBLISH_ENABLED: "true"
+      LIVE_PUBLISH_APPROVED: "true"
+      POSTS_PER_ACCOUNT_PER_RUN: "1"
+      LIVE_EXPECTED_POSTS_PER_HOUR: "4"
+      PER_ACCOUNT_DAILY_LIMIT: "96"
+      LIVE_RESERVE_CANDIDATES: "4"
+      LIVE_OUTER_CAPTURE_ATTEMPTS: "2"
+      LIVE_RETRY_DELAY_SECONDS: "2"
+      SYMBOL_COOLDOWN_HOURS: "1"
+      STATELESS_SLOT_ROTATION: "true"
+      WEB_CAPTURE_ENABLED: "true"
+      RENDERED_CHART_ENABLED: "false"
+      MOBILE_CAPTURE_ENABLED: "false"
+
+      SOCIAL_SOURCE_ACCOUNT_ID: account_02
+      SOCIAL_STATE_PATH: data/state/account_02/social_delivery_state.json
+      SOCIAL_SYNDICATION_ENABLED: "true"
+      SOCIAL_LIVE_APPROVED: "true"
+      SOCIAL_PENDING_RETRY_LIMIT: "1"
+      SOCIAL_REQUEST_TIMEOUT_SECONDS: "45"
+      DISCORD_PUBLISH_ENABLED: ${{ inputs.discord }}
+      FACEBOOK_PUBLISH_ENABLED: ${{ inputs.facebook }}
+      INSTAGRAM_PUBLISH_ENABLED: ${{ inputs.instagram }}
+      THREADS_PUBLISH_ENABLED: ${{ inputs.threads }}
+
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+      FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+      INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+      INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+      THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+      THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      CLOUDINARY_FOLDER: coincoach-signals
+      META_GRAPH_API_VERSION: ${{ vars.META_GRAPH_API_VERSION }}
+      THREADS_API_BASE_URL: ${{ vars.THREADS_API_BASE_URL || 'https://graph.threads.net/v1.0' }}
+
+    steps:
+      - name: Validate explicit pilot approval
+        shell: bash
+        run: |
+          if [ "${{ inputs.confirmation }}" != "POST_ACCOUNT_02_SOCIAL_PILOT" ]; then
+            echo "Confirmation must be POST_ACCOUNT_02_SOCIAL_PILOT"
+            exit 1
+          fi
+
+          if [ "${{ inputs.discord }}" != "true" ] && \
+             [ "${{ inputs.facebook }}" != "true" ] && \
+             [ "${{ inputs.instagram }}" != "true" ] && \
+             [ "${{ inputs.threads }}" != "true" ]; then
+            echo "Select at least one social destination"
+            exit 1
+          fi
+
+          if [ -z "$BINANCE_SQUARE_KEY_ACTIVE" ]; then
+            echo "Missing BINANCE_SQUARE_KEY_ACCOUNT_02 secret"
+            exit 1
+          fi
+
+      - name: Check out project
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Restore account_02 state
+        uses: actions/cache@v4
+        with:
+          path: data/state/account_02
+          key: coincoach-live-state-account_02-${{ github.run_id }}
+          restore-keys: |
+            coincoach-live-state-account_02-
+
+      - name: Install Python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Install official Binance Square Post Skill
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/binance/binance-skills-hub.git .binance-skills-hub
+          SKILL_DIR="$GITHUB_WORKSPACE/.binance-skills-hub/skills/binance/square-post"
+          test -f "$SKILL_DIR/scripts/post-image.mjs"
+          echo "BINANCE_SQUARE_SKILL_DIR=$SKILL_DIR" >> "$GITHUB_ENV"
+
+      - name: Publish one account_02 Square signal and selected social copies
+        run: python -m scripts.run_square_slot
+
+      - name: Require selected social destinations to pass
+        run: python -m scripts.validate_social_pilot
+
+      - name: Upload pilot artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coincoach-account-02-social-pilot-${{ github.run_number }}
+          path: output/
+          if-no-files-found: warn
+          retention-days: 3

@@ -1,0 +1,9 @@
+.github/workflows/live-square-96-per-day.yml
+github_templates/hourly-square-api-live.yml
+config/settings.yaml
+scripts/run_square_slot.py
+tests/test_live_96_schedule.py
+docs/CHANGELOG_v0_5_3.md
+V0_5_3_PATCH_FILES.txt
+install_v0_5_3_patch.ps1
+BUILD_VALIDATION_v0_5_3.txt

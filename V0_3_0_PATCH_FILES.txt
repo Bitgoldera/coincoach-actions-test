@@ -1,0 +1,4 @@
+app/official_web_chart.py
+docs/CHANGELOG_v0_3_0.md
+V0_3_0_PATCH_FILES.txt
+install_v0_3_0_patch.ps1

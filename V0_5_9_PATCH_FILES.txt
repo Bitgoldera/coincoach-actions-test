@@ -1,0 +1,10 @@
+.github/workflows/live-square-96-per-day.yml
+app/cycle.py
+app/storage.py
+scripts/run_square_slot.py
+tests/test_caption_variation.py
+tests/test_live_96_schedule.py
+tests/test_parallel_account_jobs.py
+docs/CHANGELOG_v0_5_9.md
+V0_5_9_PATCH_FILES.txt
+BUILD_VALIDATION_v0_5_9.txt

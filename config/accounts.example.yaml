@@ -1,0 +1,31 @@
+accounts:
+  - id: account_01
+    enabled: true
+    style: punchy
+    key_env: BINANCE_SQUARE_KEY_ACCOUNT_01
+    hourly_offset_minutes: 0
+  - id: account_02
+    enabled: true
+    style: casual
+    key_env: BINANCE_SQUARE_KEY_ACCOUNT_02
+    hourly_offset_minutes: 2
+  - id: account_03
+    enabled: true
+    style: calm
+    key_env: BINANCE_SQUARE_KEY_ACCOUNT_03
+    hourly_offset_minutes: 4
+  - id: account_04
+    enabled: true
+    style: reactive
+    key_env: BINANCE_SQUARE_KEY_ACCOUNT_04
+    hourly_offset_minutes: 6
+  - id: account_05
+    enabled: true
+    style: direct
+    key_env: BINANCE_SQUARE_KEY_ACCOUNT_05
+    hourly_offset_minutes: 8
+  - id: account_06
+    enabled: true
+    style: chart_reader
+    key_env: BINANCE_SQUARE_KEY_ACCOUNT_06
+    hourly_offset_minutes: 10

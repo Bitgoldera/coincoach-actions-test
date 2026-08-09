@@ -1,0 +1,8 @@
+app/caption_engine.py
+app/router.py
+config/settings.yaml
+tests/test_caption_variation.py
+tests/test_router.py
+docs/CHANGELOG_v0_6_1.md
+V0_6_1_PATCH_FILES.txt
+BUILD_VALIDATION_v0_6_1.txt

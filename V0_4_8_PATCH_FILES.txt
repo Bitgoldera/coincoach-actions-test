@@ -1,0 +1,6 @@
+app/caption_engine.py
+config/settings.yaml
+tests/test_caption_variation.py
+docs/CHANGELOG_v0_4_8.md
+BUILD_VALIDATION_v0_4_8.txt
+V0_4_8_PATCH_FILES.txt

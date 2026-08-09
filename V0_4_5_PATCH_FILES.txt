@@ -1,0 +1,10 @@
+app/router.py
+app/caption_engine.py
+scripts/run_free_cloud.py
+config/settings.yaml
+tests/test_router.py
+tests/test_caption_variation.py
+docs/CHANGELOG_v0_4_5.md
+BUILD_VALIDATION_v0_4_5.txt
+V0_4_5_PATCH_FILES.txt
+install_v0_4_5_patch.ps1

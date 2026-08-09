@@ -1,0 +1,13 @@
+CoinCoachSignalCloud v0.5.3 validation
+
+- Python compilation: passed
+- Full unittest suite: 73 tests passed
+- Workflow YAML parsing: passed
+- Settings YAML parsing: passed
+- Active schedule: 07,22,37,52 minutes each hour
+- Requested cadence: 4 scheduled runs/hour, 96 scheduled runs/day
+- Posts per keyed account per run: 1
+- Repository kill switch required: COINCOACH_LIVE_96_ENABLED=true
+- Publishing remains off until the repository variable is explicitly enabled.
+
+Important: GitHub Actions scheduled events can be delayed or dropped under high load, so exact wall-clock delivery cannot be guaranteed by GitHub-hosted scheduling.

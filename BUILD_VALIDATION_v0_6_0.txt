@@ -1,0 +1,33 @@
+CoinCoach Signal Cloud v0.6.0 build validation
+===========================================
+
+Validation completed: 2026-08-02
+
+PASS - 103 unit tests
+PASS - Python compilation for app, scripts and tests
+PASS - YAML parsing for existing live workflow and new manual pilot workflow
+PASS - existing six-account matrix and Cloudflare schedule unchanged
+PASS - social path hard-routed to account_02
+PASS - all new social switches disabled by default
+PASS - social publishing occurs only after confirmed Square success
+PASS - non-source Binance accounts make zero social API calls
+PASS - missing social approval makes zero social API calls
+PASS - independent destination failure does not undo successful destinations
+PASS - persistent pending delivery state and retained-image cleanup
+PASS - explicit Meta Graph API version required for Meta destinations
+PASS - manual pilot requires exact confirmation and one selected destination
+PASS - manual pilot validates selected social results after Square publish
+
+Not executed in the build container:
+- Live Discord webhook post
+- Live Facebook Page photo post
+- Live Instagram image post
+- Live Threads image post
+- Live Cloudinary image upload
+- Live Binance Square + social pilot
+
+Safety scope:
+- Installing the patch alone cannot publish to social media.
+- Existing Binance Square behavior remains the source of truth.
+- Social delivery begins only after a confirmed account_02 Square success.
+- Social failures are reported and retried independently without changing Square status.

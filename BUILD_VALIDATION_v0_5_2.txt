@@ -1,0 +1,14 @@
+CoinCoach Signal Cloud v0.5.2 validation
+
+Target change:
+- official Binance mobile chart output: 1080x1080
+- crop aspect ratio: 1.0
+- capture/publisher logic otherwise unchanged from v0.5.1
+
+Validation commands:
+- python -m py_compile app/*.py scripts/*.py
+- python -m unittest discover -s tests -v
+- YAML parse for config/settings.yaml and workflow files
+- ZIP integrity check
+
+Live Binance rendering must be confirmed by a fresh GitHub Actions proof/preview run.

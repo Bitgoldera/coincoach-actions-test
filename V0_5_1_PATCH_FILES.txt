@@ -1,0 +1,9 @@
+app/official_web_chart.py
+scripts/run_square_slot.py
+.github/workflows/manual-square-api-test.yml
+tests/test_official_web_chart.py
+tests/test_square_publisher.py
+docs/CHANGELOG_v0_5_1.md
+V0_5_1_PATCH_FILES.txt
+install_v0_5_1_patch.ps1
+BUILD_VALIDATION_v0_5_1.txt

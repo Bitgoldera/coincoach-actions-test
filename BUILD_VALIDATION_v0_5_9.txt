@@ -1,0 +1,28 @@
+CoinCoachSignalCloud v0.5.9 build validation
+===========================================
+
+Validation completed: 2026-07-31
+
+PASS - 93 unit tests
+PASS - Python compilation for app, scripts and tests
+PASS - YAML parsing for workflow and project settings
+PASS - six-account GitHub Actions matrix configuration
+PASS - fail-fast disabled so one API failure does not cancel other accounts
+PASS - max-parallel set to six account jobs
+PASS - generic selected-account key mapping tests
+PASS - isolated SQLite database, publish ledger, cache and artifacts per account
+PASS - Windows-safe SQLite connection cleanup tests
+PASS - stale Render schedule test replaced by current Cloudflare/live workflow tests
+PASS - existing Cloudflare schedule remains 6,21,36,51 UTC minutes
+PASS - existing captions, leverage wording, TP limits, scanner and chart output unchanged
+
+Not executed in the build container:
+- Live GitHub Actions matrix run
+- Live Binance mobile-web chart capture
+- Live Binance Square publishing for multiple API accounts
+
+Reliability scope:
+- The patch removes sequential account blocking and gives each configured API account
+  an independent scheduled attempt at every 15-minute slot.
+- Remote service outages, Binance API rejection, runner queueing, or chart capture failure
+  can still prevent an individual publish; no external system can guarantee every post.

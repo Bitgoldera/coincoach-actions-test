@@ -1,0 +1,15 @@
+.git
+.github
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.zip
+.env
+output
+data/*.db
+data/*.json
+playwright-report
+test-results
+tmp
+cloudflare_scheduler

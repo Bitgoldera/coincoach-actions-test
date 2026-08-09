@@ -1,0 +1,15 @@
+app/official_web_chart.py
+scripts/run_official_web_proof.py
+scripts/run_free_cloud.py
+scripts/run_square_slot.py
+config/settings.yaml
+.github/workflows/manual-binance-mobile-web-proof.yml
+.github/workflows/manual-free-cloud-test.yml
+.github/workflows/manual-square-api-test.yml
+github_templates/hourly-square-api-live.yml
+tests/test_official_web_chart.py
+README.md
+docs/GITHUB_FREE_SETUP.md
+docs/CHANGELOG_v0_2_7.md
+V0_2_7_PATCH_FILES.txt
+install_v0_2_7_patch.ps1

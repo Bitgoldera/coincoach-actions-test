@@ -1,0 +1,21 @@
+CoinCoach Signal Cloud v0.6.1 build validation
+
+Base validated: v0.6.0 social syndication installation
+
+Validation completed:
+- Python compilation: PASS
+- Full unit test suite: PASS (104 tests)
+- Per-account daily leverage simulation: PASS
+  - account_01: 30/96 slots
+  - account_02: 30/96 slots
+  - account_03: 30/96 slots
+  - account_04: 30/96 slots
+  - account_05: 30/96 slots
+  - account_06: 30/96 slots
+- Leverage range: PASS (15x through 25x only)
+- Long and short captions: PASS
+- Leverage remains inside opening sentence: PASS
+- No leverage sentence prefix or suffix: PASS
+- Account-specific schedules differ: PASS
+- Existing v0.6.0 social routing tests: PASS
+- Existing Binance scheduler, scanner, chart, TP/SL and publishing tests: PASS

@@ -1,0 +1,13 @@
+CoinCoachSignalCloud v0.5.0 build validation
+
+- Python compile: passed
+- Full unittest discovery: 65 tests passed
+- Final public preview target: 5 posts per active account
+- Internal reserve candidate target: 9 posts per active account
+- Final timeframe cap: 2 per timeframe
+- Candidate timeframe cap: 3 per timeframe
+- Preview outer attempts: 2 (capture class internal attempts remain active)
+- Failed reserve candidate diagnostics: removed from successful final artifact
+- Publishing: disabled
+
+Live Binance compatibility still depends on the next GitHub Actions preview run.

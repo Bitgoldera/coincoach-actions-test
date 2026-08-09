@@ -1,0 +1,20 @@
+CoinCoachSignalCloud v0.5.5 patch files
+
+ADD / REPLACE
+- Dockerfile.render
+- .dockerignore
+- render.yaml
+- scripts/run_render_slot.py
+- scripts/run_square_slot.py
+- tests/test_live_96_schedule.py
+- .env.example
+- docs/RENDER_CRON_SETUP.md
+- docs/CHANGELOG_v0_5_5.md
+- V0_5_5_PATCH_FILES.txt
+- BUILD_VALIDATION_v0_5_5.txt
+- install_v0_5_5_patch.ps1
+
+REMOVE
+- cloudflare_scheduler/
+- .github/workflows/live-square-96-per-day.yml
+- .github/workflows/schedule-heartbeat.yml (when present)

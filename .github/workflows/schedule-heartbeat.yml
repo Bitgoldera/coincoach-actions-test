@@ -1,0 +1,16 @@
+name: Schedule heartbeat test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm scheduled trigger
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "UTC time:"
+          date -u

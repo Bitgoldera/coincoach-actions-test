@@ -1,0 +1,72 @@
+name: Manual official Binance chart preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coincoach-manual-official-mobile-web-preview
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      APP_ENV: github-actions-preview
+      DATABASE_PATH: data/coincoach.db
+      ACCOUNT_ACTIVATION_MODE: key_present
+      BINANCE_SQUARE_KEY_ACCOUNT_01: DRY_RUN_ONLY
+      BINANCE_SQUARE_KEY_ACCOUNT_02: ""
+      BINANCE_SQUARE_KEY_ACCOUNT_03: ""
+      BINANCE_SQUARE_KEY_ACCOUNT_04: ""
+      BINANCE_SQUARE_KEY_ACCOUNT_05: ""
+      BINANCE_SQUARE_KEY_ACCOUNT_06: ""
+      PUBLISH_ENABLED: "false"
+      LIVE_PUBLISH_APPROVED: "false"
+      WEB_CAPTURE_ENABLED: "true"
+      RENDERED_CHART_ENABLED: "false"
+      MOBILE_CAPTURE_ENABLED: "false"
+
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Restore signal and phrase memory
+        uses: actions/cache@v4
+        with:
+          path: data/coincoach.db
+          key: coincoach-preview-state-${{ github.run_id }}
+          restore-keys: |
+            coincoach-preview-state-
+
+      - name: Install Python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run automated tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Generate five signals and official Binance mobile-web live chart previews
+        run: python -m scripts.run_free_cloud
+
+      - name: Upload preview artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coincoach-official-web-preview-${{ github.run_number }}
+          path: output/
+          if-no-files-found: warn
+          retention-days: 2

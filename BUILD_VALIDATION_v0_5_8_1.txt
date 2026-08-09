@@ -1,0 +1,9 @@
+CoinCoachSignalCloud v0.5.8.1 validation
+
+- Full unittest discovery: 88 tests passed
+- Python compilation: passed
+- Installer file-presence validation: passed
+- ZIP integrity: passed
+
+Environment used for validation: Linux, Python 3.13.5.
+The hotfix specifically closes SQLite handles before Windows temporary-directory cleanup and replaces the stale Render-era scheduler test.

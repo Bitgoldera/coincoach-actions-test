@@ -1,0 +1,6 @@
+app/official_web_chart.py
+scripts/run_official_web_proof.py
+tests/test_official_web_chart.py
+docs/CHANGELOG_v0_3_6.md
+V0_3_6_PATCH_FILES.txt
+install_v0_3_6_patch.ps1

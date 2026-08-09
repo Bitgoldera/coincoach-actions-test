@@ -1,0 +1,6 @@
+app/official_web_chart.py
+config/settings.yaml
+tests/test_official_web_chart.py
+docs/CHANGELOG_v0_4_2.md
+V0_4_2_PATCH_FILES.txt
+install_v0_4_2_patch.ps1

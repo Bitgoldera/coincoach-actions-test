@@ -1,0 +1,5 @@
+scripts/run_free_cloud.py
+tests/test_free_cloud_preview_config.py
+docs/CHANGELOG_v0_4_4.md
+V0_4_4_PATCH_FILES.txt
+install_v0_4_4_patch.ps1

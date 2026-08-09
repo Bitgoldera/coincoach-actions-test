@@ -1,0 +1,29 @@
+services:
+  signal-api:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["python", "-m", "app.main", "api", "--host", "0.0.0.0", "--port", "8080"]
+    ports:
+      - "8080:8080"
+    volumes:
+      - signal_data:/data
+      - ./output:/app/output
+      - ./config:/app/config:ro
+      - ./.env:/app/.env:ro
+
+  hourly-worker:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: ["python", "scripts/run_hourly.py"]
+    volumes:
+      - signal_data:/data
+      - ./output:/app/output
+      - ./config:/app/config:ro
+      - ./.env:/app/.env:ro
+
+volumes:
+  signal_data:

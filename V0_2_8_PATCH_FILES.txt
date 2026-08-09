@@ -1,0 +1,6 @@
+app/official_web_chart.py
+config/settings.yaml
+docs/CHANGELOG_v0_2_8.md
+README.md
+docs/GITHUB_FREE_SETUP.md
+install_v0_2_8_patch.ps1

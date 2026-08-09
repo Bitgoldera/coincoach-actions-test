@@ -1,0 +1,8 @@
+CoinCoachSignalCloud v0.4.6 validation
+
+- Python compilation: passed
+- Automated unit tests: passed
+- Five-post preview cooldown isolation: covered by tests
+- Transient outer capture retry: covered by tests
+- Live Binance compatibility: must be verified by a fresh GitHub Actions preview run
+- Publishing: disabled

@@ -1,0 +1,7 @@
+app/official_web_chart.py
+config/settings.yaml
+tests/test_official_web_chart.py
+README.md
+docs/GITHUB_FREE_SETUP.md
+docs/CHANGELOG_v0_2_9.md
+V0_2_9_PATCH_FILES.txt

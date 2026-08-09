@@ -1,0 +1,10 @@
+CoinCoach Signal Cloud v0.4.9 validation
+
+- Python compile: passed
+- Full unittest suite: 63 tests passed
+- Clean varied caption validator: passed
+- Removed context/NFA lines rejected if reintroduced: passed
+- Preview outer capture attempts: 3
+- Stale retry diagnostics cleanup: enabled
+- Chart capture/crop engine: unchanged from v0.4.3-stable
+- Publishing remains disabled in preview workflow

@@ -1,0 +1,109 @@
+name: Manual Square API one-post test
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type POST_ONE to publish one real image post
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coincoach-square-api-live
+  cancel-in-progress: false
+
+jobs:
+  publish-one:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      APP_ENV: github-actions-live-test
+      DATABASE_PATH: data/coincoach.db
+      ACCOUNT_ACTIVATION_MODE: key_present
+      BINANCE_SQUARE_KEY_ACCOUNT_01: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_01 }}
+      BINANCE_SQUARE_KEY_ACCOUNT_02: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_02 }}
+      BINANCE_SQUARE_KEY_ACCOUNT_03: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_03 }}
+      BINANCE_SQUARE_KEY_ACCOUNT_04: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_04 }}
+      BINANCE_SQUARE_KEY_ACCOUNT_05: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_05 }}
+      BINANCE_SQUARE_KEY_ACCOUNT_06: ${{ secrets.BINANCE_SQUARE_KEY_ACCOUNT_06 }}
+      PUBLISH_ENABLED: "true"
+      LIVE_PUBLISH_APPROVED: "true"
+      POSTS_PER_ACCOUNT_PER_RUN: "1"
+      LIVE_RESERVE_CANDIDATES: "4"
+      LIVE_OUTER_CAPTURE_ATTEMPTS: "2"
+      LIVE_RETRY_DELAY_SECONDS: "2"
+      SYMBOL_COOLDOWN_HOURS: "1"
+      WEB_CAPTURE_ENABLED: "true"
+      RENDERED_CHART_ENABLED: "false"
+      MOBILE_CAPTURE_ENABLED: "false"
+
+    steps:
+      - name: Validate confirmation
+        shell: bash
+        run: |
+          if [ "${{ inputs.confirmation }}" != "POST_ONE" ]; then
+            echo "Confirmation must be POST_ONE"
+            exit 1
+          fi
+
+      - name: Check out project
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Restore signal and publish state
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/coincoach.db
+            data/publish_ledger.json
+          key: coincoach-live-state-${{ github.run_id }}
+          restore-keys: |
+            coincoach-live-state-
+
+      - name: Install Python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+
+      - name: Install official Binance Square Post Skill
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/binance/binance-skills-hub.git .binance-skills-hub
+          SKILL_DIR="$GITHUB_WORKSPACE/.binance-skills-hub/skills/binance/square-post"
+          test -f "$SKILL_DIR/scripts/post-image.mjs"
+          echo "BINANCE_SQUARE_SKILL_DIR=$SKILL_DIR" >> "$GITHUB_ENV"
+
+      - name: Run capture and publisher tests
+        run: |
+          python -m unittest -v \
+            tests/test_official_web_chart.py \
+            tests/test_web_capture.py \
+            tests/test_square_publisher.py
+
+      - name: Generate official chart and publish one post per keyed account
+        run: python -m scripts.run_square_slot
+
+      - name: Upload API run artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: coincoach-square-api-test-${{ github.run_number }}
+          path: output/
+          if-no-files-found: error
+          retention-days: 2

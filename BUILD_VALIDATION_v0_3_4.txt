@@ -1,0 +1,14 @@
+CoinCoachSignalCloud v0.3.4 build validation
+
+Passed locally:
+- Python compilation for app/*.py and scripts/*.py
+- 43 automated tests
+- Browser-backed mobile mock tests
+- 1080x1350 normalization test
+- Pair-name scroll/crop positioning test
+- MA indicator-control removal mock test
+
+Important:
+- Live Binance production compatibility cannot be proven in this offline build container.
+- The first GitHub Actions proof run is the live compatibility test.
+- Publishing remains disabled in proof workflows.

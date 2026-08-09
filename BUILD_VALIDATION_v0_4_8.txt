@@ -1,0 +1,9 @@
+CoinCoach Signal Cloud v0.4.8 validation
+
+- Python compile: passed
+- Full unittest suite: 61 tests passed
+- Caption detail layouts: 6 deterministic variants
+- Exact level labels preserved: Entry, TP1, TP2, TP3, Stop Loss
+- Removed lines remain disabled: context line and NFA/DYOR
+- Chart capture code unchanged
+- Publishing remains disabled in preview workflow
