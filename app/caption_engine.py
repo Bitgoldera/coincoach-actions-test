@@ -319,17 +319,11 @@ def _maybe_add_leverage(
     leverage_cfg = caption_cfg.get("leverage", {})
     if not leverage_slot_active(caption_cfg, now, account_id):
         return opening
-    market_tags = {str(tag).lower() for tag in signal.facts.get("market_tags", [])}
-    is_bstock_or_tradfi = "tradfi" in market_tags or "bstock" in market_tags
 
-    # bStock / TradFi uses the fixed 5x rule and does not require
-    # crypto perpetual eligibility.
-    if not is_bstock_or_tradfi:
-        if bool(leverage_cfg.get("require_perpetual_eligible", True)) and not bool(
-            signal.facts.get("perpetual_eligible", False)
-        ):
-            return opening
-
+    # bStock / TradFi always uses the fixed 5x rule.
+    # Normal crypto can receive leverage regardless of whether the scanned
+    # market is currently marked perpetual-eligible. This allows the
+    # configured daily leverage slots to work for spot-scanned crypto too.
     leverage = _leverage_value(signal, seed, leverage_cfg)
     return _inject_leverage_phrase(opening, signal, leverage, seed)
 

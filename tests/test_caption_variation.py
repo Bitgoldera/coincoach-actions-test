@@ -260,8 +260,8 @@ class CaptionLeverageTest(unittest.TestCase):
             first_line = engine.generate(
                 self._signal("LONG", perpetual=False), "account_01", "direct"
             ).splitlines()[0]
-            self.assertNotIn("leverage", first_line.lower())
-            self.assertNotIn("leveraged", first_line.lower())
+            self.assertIn("leverage", first_line.lower())
+            self.assertRegex(first_line, r"(?:1[5-9]|[2-9][0-9]|100)x")
             storage.close()
 
     def test_leverage_is_varied_but_always_inside_the_first_line(self):
