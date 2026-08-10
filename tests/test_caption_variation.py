@@ -118,7 +118,13 @@ class CaptionStructureTest(unittest.TestCase):
             self.assertIn("TP3:", caption)
             self.assertIn("Stop Loss:", caption)
             self.assertIn("Stop Loss: 65000.00", caption)
-            self.assertRegex(caption.splitlines()[-1], r"^#BTC #(?:Binance|binance) #(?:Write2Earn|Write2Earn!) #(?:crypto|Crypto)$")
+            tags = caption.splitlines()[-1].split()
+            self.assertEqual(4, len(tags))
+            self.assertEqual("#BTC", tags[0])
+            self.assertEqual(
+                {tag.lower().rstrip("!") for tag in tags[1:]},
+                {"#binance", "#write2earn", "#crypto"},
+            )
             storage.close()
 
     def test_signal_details_support_multiple_human_readable_layouts(self):
@@ -163,7 +169,13 @@ class CaptionStructureTest(unittest.TestCase):
             )
             self.assertIn("Long | Futures | 15M", caption)
             self.assertIn("NFA. DYOR.", caption)
-            self.assertRegex(caption.splitlines()[-1], r"^#BTC #(?:Binance|binance) #(?:Write2Earn|Write2Earn!) #(?:crypto|Crypto)$")
+            tags = caption.splitlines()[-1].split()
+            self.assertEqual(4, len(tags))
+            self.assertEqual("#BTC", tags[0])
+            self.assertEqual(
+                {tag.lower().rstrip("!") for tag in tags[1:]},
+                {"#binance", "#write2earn", "#crypto"},
+            )
             storage.close()
 
 
@@ -291,9 +303,10 @@ class CaptionHashtagAndBStockTest(unittest.TestCase):
             tags = caption.splitlines()[-1].split()
             self.assertEqual(4, len(tags))
             self.assertEqual("#BTC", tags[0])
-            self.assertIn(tags[1], {"#Binance", "#binance"})
-            self.assertIn(tags[2], {"#Write2Earn", "#Write2Earn!"})
-            self.assertIn(tags[3], {"#crypto", "#Crypto"})
+            self.assertEqual(
+                {tag.lower().rstrip("!") for tag in tags[1:]},
+                {"#binance", "#write2earn", "#crypto"},
+            )
             storage.close()
 
     def test_bstock_uses_five_x_override(self):

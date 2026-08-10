@@ -335,17 +335,35 @@ def _maybe_add_leverage(
 
 
 def _hashtag_line(signal: Signal, seed: bytes, hashtag_cfg: dict) -> str:
-    """Build exactly four hashtags: asset + one variant from each configured group."""
+    """Build exactly four hashtags: asset first, then rotate the other three groups."""
     groups = hashtag_cfg or {}
-    binance = list(groups.get("binance", ["#Binance", "#binance"]))
-    write2earn = list(groups.get("write2earn", ["#Write2Earn", "#Write2Earn!"]))
-    crypto = list(groups.get("crypto", ["#crypto", "#Crypto"]))
-    asset = str(signal.base_asset).strip().upper().replace(" ", "")
+    configured = [
+        ("binance", list(groups.get("binance", ["#Binance", "#binance"]))),
+        ("write2earn", list(groups.get("write2earn", ["#Write2Earn", "#Write2Earn!"]))),
+        ("crypto", list(groups.get("crypto", ["#crypto", "#Crypto"]))),
+    ]
+
     def choose(options: list[str], offset: int) -> str:
         valid = [str(value).strip() for value in options if str(value).strip()]
         return valid[seed[offset % len(seed)] % len(valid)] if valid else ""
-    return " ".join(part for part in (f"#{asset}", choose(binance, 7), choose(write2earn, 13), choose(crypto, 29)) if part)
 
+    # The coin hashtag is ALWAYS first.
+    asset = str(signal.base_asset).strip().upper().replace(" ", "")
+    tags = [f"#{asset}"]
+
+    # Rotate the three other hashtag groups.
+    order = sorted(
+        range(len(configured)),
+        key=lambda index: seed[(17 + index * 7) % len(seed)],
+    )
+
+    for position, index in enumerate(order):
+        _, options = configured[index]
+        tag = choose(options, 7 + position * 11)
+        if tag:
+            tags.append(tag)
+
+    return " ".join(tags)
 
 class CaptionEngine:
     def __init__(
