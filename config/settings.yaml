@@ -180,10 +180,10 @@ captions:
     - 48
     - 49
     - 50
+    - 70
+    - 100
 
-
-  - 70
-  - 100capture:
+capture:
   enabled: false
   web_enabled: true
   rendered_enabled: false
